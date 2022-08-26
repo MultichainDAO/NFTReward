@@ -8,10 +8,11 @@ contract NFT is ERC721Enumerable {
     constructor(
         string memory name_,
         string memory symbol_,
-        string memory eventID_
+        string memory eventID_,
+        address owner_
     ) ERC721(name_, symbol_) {
         eventID = eventID_;
-        owner = msg.sender;
+        owner = owner_;
     }
 
     string public eventID;
@@ -139,7 +140,7 @@ contract NFTFactory {
         bytes memory bytecode = type(NFT).creationCode;
         bytecode = abi.encodePacked(
             bytecode,
-            abi.encode(name_, symbol_, eventID_)
+            abi.encode(name_, symbol_, eventID_, msg.sender)
         );
         assembly {
             addr := create2(

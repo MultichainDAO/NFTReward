@@ -108,7 +108,6 @@ contract RewardHandler_VEShare is Administrable, IRewardHandler, IERC721Receiver
     // withdraw multi after expired
     function withdrawMulti(address to) onlyAdmin external {
         IVE(ve).withdraw(ve_tokenId);
-        IVE(ve).withdraw(ve_tokenId);
         uint256 amount = IERC20(multi).balanceOf(address(this));
         IERC20(multi).transfer(to, amount);
         ve_tokenId = 0;
