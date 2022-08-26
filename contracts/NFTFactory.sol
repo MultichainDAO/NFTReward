@@ -101,6 +101,7 @@ contract NFT is ERC721Enumerable {
 contract NFTFactory {
     address public owner;
     address public pendingOwner;
+    mapping(string => address) public nftAddress;
 
     event CreateNFT(address nft);
 
@@ -137,6 +138,7 @@ contract NFTFactory {
         uint256 salt
     ) external returns (address addr) {
         require(isCreator[msg.sender], "not allowed");
+        require(nftAddress[name_] == address(0), "duplicated nft name");
         bytes memory bytecode = type(NFT).creationCode;
         bytecode = abi.encodePacked(
             bytecode,
@@ -154,6 +156,7 @@ contract NFTFactory {
                 revert(0, 0)
             }
         }
+        nftAddress[name_] = addr;
         emit CreateNFT(addr);
         return addr;
     }

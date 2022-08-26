@@ -45,30 +45,30 @@ contract RewardPortal is Initializable,OwnableUpgradeable {
         factory_veShare = factory_;
     }
 
-    function deployRewardHandler_SlowRelease(address nft, address rewardToken)
+    function deployRewardHandler_SlowRelease(address nft, address rewardToken, uint256 salt)
         public
         payable
         onlyOwner
         returns (address)
     {
-        uint256 salt = block.timestamp;
         address handler = IRewardHandler_Factory_SlowRelease(
             factory_slowRelease
-        ).create(nft, rewardToken, salt);
+        ).create{value:msg.value}(nft, rewardToken, salt);
         rewardHandler[nft] = handler;
         return handler;
     }
 
     function deployRewardHandler_VEShare(
+        address nft,
         address multi,
         address ve,
         address vereward,
         string memory name,
-        address nft
+        uint256 salt
     ) public payable onlyOwner returns (address) {
-        uint256 salt = block.timestamp;
+        address nft;
         address handler = IRewardHandler_Factory_VEShare(factory_veShare)
-            .create(multi, ve, vereward, name, nft, salt);
+            .create{value:msg.value}(multi, ve, vereward, name, nft, salt);
         rewardHandler[nft] = handler;
         return handler;
     }
