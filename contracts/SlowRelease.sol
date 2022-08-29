@@ -58,8 +58,8 @@ contract RewardHandler_SlowRelease is Administrable, IRewardHandler {
     }
 
     function claimReward(uint256 tokenId) override external {
-        lastClaimTime[tokenId] = block.timestamp;
         uint256 amount = claimable(tokenId);
+        lastClaimTime[tokenId] = block.timestamp;
         IERC20(rewardToken).transfer(IERC721(nft).ownerOf(tokenId), amount);
     }
 }
