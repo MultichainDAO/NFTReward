@@ -68,13 +68,13 @@ contract RewardHandler_VEShare is Administrable, IRewardHandler, IERC721Receiver
     event LogMint(uint256 tokenId, uint256 amount, uint256 startTime, uint256 endTime);
     event LogMintBatch(uint256[] tokenIds, uint256 amount, uint256 startTime, uint256 endTime);
 
-    constructor (address multi_, address ve_, address vereward_, string memory name_, address nft_) {
+    constructor (address multi_, address ve_, address vereward_, string memory name_, address nft_, address admin) {
         ve = ve_;
         vereward = vereward_;
         multi = multi_;
         name = name_;
         nft = nft_;
-        setAdmin(msg.sender);
+        setAdmin(admin);
     }
 
     function setNFT(address nft_) onlyAdmin external {
@@ -291,14 +291,14 @@ contract RewardHandler_VEShare is Administrable, IRewardHandler, IERC721Receiver
 }
 
 contract RewardHandler_Factory_VEShare {
-    function getBytecode(address multi, address ve, address vereward, string memory name, address nft) public pure returns (bytes memory) {
+    function getBytecode(address multi, address ve, address vereward, string memory name, address nft, address admin) public pure returns (bytes memory) {
         bytes memory bytecode = type(RewardHandler_VEShare).creationCode;
-        return abi.encodePacked(bytecode, abi.encode(multi), abi.encode(ve), abi.encode(vereward), abi.encode(name), abi.encode(nft));
+        return abi.encodePacked(bytecode, abi.encode(multi), abi.encode(ve), abi.encode(vereward), abi.encode(name), abi.encode(nft), abi.encode(admin));
     }
 
-    function create(address multi, address ve, address vereward, string memory name, address nft, uint salt) payable public returns (address) {
+    function create(address multi, address ve, address vereward, string memory name, address nft, uint salt, address admin) payable public returns (address) {
         address addr;
-        bytes memory bytecode = getBytecode(multi, ve, vereward, name, nft);
+        bytes memory bytecode = getBytecode(multi, ve, vereward, name, nft, admin);
         assembly {
             addr := create2(
                 callvalue(),

@@ -9,7 +9,8 @@ interface IRewardHandler_Factory_SlowRelease {
     function create(
         address nft,
         address rewardToken,
-        uint256 salt
+        uint256 salt,
+        address admin
     ) external payable returns (address);
 }
 
@@ -20,7 +21,8 @@ interface IRewardHandler_Factory_VEShare {
         address vereward,
         string memory name,
         address nft,
-        uint256 salt
+        uint256 salt,
+        address admin
     ) external payable returns (address);
 }
 
@@ -53,7 +55,7 @@ contract RewardPortal is Initializable,OwnableUpgradeable {
     {
         address handler = IRewardHandler_Factory_SlowRelease(
             factory_slowRelease
-        ).create{value:msg.value}(nft, rewardToken, salt);
+        ).create{value:msg.value}(nft, rewardToken, salt, msg.sender);
         rewardHandler[nft] = handler;
         return handler;
     }
@@ -68,7 +70,7 @@ contract RewardPortal is Initializable,OwnableUpgradeable {
     ) public payable onlyOwner returns (address) {
         address nft;
         address handler = IRewardHandler_Factory_VEShare(factory_veShare)
-            .create{value:msg.value}(multi, ve, vereward, name, nft, salt);
+            .create{value:msg.value}(multi, ve, vereward, name, nft, salt, msg.sender);
         rewardHandler[nft] = handler;
         return handler;
     }

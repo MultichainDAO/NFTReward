@@ -26,10 +26,10 @@ contract RewardHandler_SlowRelease is Administrable, IRewardHandler {
     mapping(address => Info) public rewardInfo;
     mapping(uint256 => uint256) public lastClaimTime;
 
-    constructor (address nft_, address rewardToken_) {
+    constructor (address nft_, address rewardToken_, address admin) {
         rewardToken = rewardToken_;
         nft = nft_;
-        setAdmin(msg.sender);
+        setAdmin(admin);
     }
 
     function setReward(address[] calldata owner, uint256 amount, uint256 startTime, uint256 endTime) onlyAdmin external {
@@ -65,14 +65,14 @@ contract RewardHandler_SlowRelease is Administrable, IRewardHandler {
 }
 
 contract RewardHandler_Factory_SlowRelease {
-    function getBytecode(address nft, address rewardToken) public pure returns (bytes memory) {
+    function getBytecode(address nft, address rewardToken, address admin) public pure returns (bytes memory) {
         bytes memory bytecode = type(RewardHandler_SlowRelease).creationCode;
-        return abi.encodePacked(bytecode, abi.encode(nft), abi.encode(rewardToken));
+        return abi.encodePacked(bytecode, abi.encode(nft), abi.encode(rewardToken), abi.encode(admin));
     }
 
-    function create(address nft, address rewardToken, uint salt) payable public returns (address) {
+    function create(address nft, address rewardToken, uint salt, address admin) payable public returns (address) {
         address addr;
-        bytes memory bytecode = getBytecode(nft, rewardToken);
+        bytes memory bytecode = getBytecode(nft, rewardToken, admin);
         assembly {
             addr := create2(
                 callvalue(),
