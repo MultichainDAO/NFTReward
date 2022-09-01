@@ -68,7 +68,6 @@ contract RewardPortal is Initializable,OwnableUpgradeable {
         string memory name,
         uint256 salt
     ) public payable onlyOwner returns (address) {
-        address nft;
         address handler = IRewardHandler_Factory_VEShare(factory_veShare)
             .create{value:msg.value}(multi, ve, vereward, name, nft, salt, msg.sender);
         rewardHandler[nft] = handler;
