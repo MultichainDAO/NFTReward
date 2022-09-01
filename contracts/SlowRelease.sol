@@ -23,7 +23,7 @@ contract RewardHandler_SlowRelease is Administrable, IRewardHandler {
         uint64 endTime;
     }
 
-    mapping(address => Info) public rewardInfo;
+    mapping(uint256 => Info) public rewardInfo;
     mapping(uint256 => uint256) public lastClaimTime;
 
     constructor (address nft_, address rewardToken_, address admin) {
@@ -32,9 +32,9 @@ contract RewardHandler_SlowRelease is Administrable, IRewardHandler {
         setAdmin(admin);
     }
 
-    function setReward(address[] calldata owner, uint256 amount, uint256 startTime, uint256 endTime) onlyAdmin external {
-        for (uint i = 0; i < owner.length; i++) {
-            rewardInfo[owner[i]] = Info(amount, uint64(startTime), uint64(endTime));
+    function setReward(uint256[] calldata tokenIds, uint256 amount, uint256 startTime, uint256 endTime) onlyAdmin external {
+        for (uint i = 0; i < tokenIds.length; i++) {
+            rewardInfo[tokenIds[i]] = Info(amount, uint64(startTime), uint64(endTime));
         }
     }
 
@@ -44,7 +44,7 @@ contract RewardHandler_SlowRelease is Administrable, IRewardHandler {
     }
 
     function claimable(uint256 tokenId) override public view returns(uint256) {
-        Info memory info = rewardInfo[IERC721(nft).ownerOf(tokenId)];
+        Info memory info = rewardInfo[tokenId];
         uint256 start = uint256(info.startTime);
         uint256 end = uint256(info.endTime);
         uint256 length = end - start;
