@@ -24,6 +24,7 @@ contract NFT is ERC721Enumerable {
 
     function claim() external returns (uint256 tokenId) {
         require(whitelist[msg.sender]);
+        whitelist[msg.sender] = false;
         tokenId = nextTokenId;
         _mint(msg.sender, tokenId);
         nextTokenId++;
