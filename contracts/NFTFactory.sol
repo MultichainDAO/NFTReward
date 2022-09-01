@@ -47,6 +47,7 @@ contract NFT is ERC721Enumerable {
 
     function transferOwner(address to) external {
         require(owner == msg.sender);
+        owner = to;
     }
 
     function tokenURI(uint256 tokenId)
