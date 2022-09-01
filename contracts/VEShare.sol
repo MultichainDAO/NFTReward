@@ -183,7 +183,9 @@ contract RewardHandler_VEShare is Administrable, IRewardHandler, IERC721Receiver
         }
         if (i == endEpochId) {
           userLockEnd = endTime; // assuming endTime <= block.timestamp
-          collectedTime = block.timestamp - epochStartTime;
+          if (block.timestamp < epochEndTime) {
+            collectedTime = block.timestamp - epochStartTime;
+          }
         }
         reward_i = reward_i * (userLockEnd - userLockStart) / collectedTime;
         reward += reward_i;
