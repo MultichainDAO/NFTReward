@@ -43,11 +43,13 @@ contract RewardPortal is Initializable,OwnableUpgradeable {
     }
 
     function setFactory_SlowRelease(address factory_) public onlyOwner {
+        require(factory_slowRelease == address(0));
         factory_slowRelease = factory_;
         emit SetFactory_SlowRelease(factory_slowRelease);
     }
 
     function setFactory_VE(address factory_) public onlyOwner {
+        require(factory_veShare == address(0));
         factory_veShare = factory_;
         emit SetFactory_VE(factory_veShare);
     }
