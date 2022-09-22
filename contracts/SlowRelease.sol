@@ -38,8 +38,7 @@ contract RewardHandler_SlowRelease is Administrable, IRewardHandler {
     function setReward(uint256[] calldata tokenIds, uint256 amount, uint256 startTime, uint256 endTime) onlyAdmin external {
         require(startTime < endTime);
         for (uint i = 0; i < tokenIds.length; i++) {
-            require(rewardInfo[tokenIds[i]].startTime > block.timestamp || rewardInfo[tokenIds[i]].endTime < block.timestamp);
-            require(lastClaimTime[tokenIds[i]] >= rewardInfo[tokenIds[i]].endTime);
+            require(rewardInfo[tokenIds[i]].startTime > block.timestamp || lastClaimTime[tokenIds[i]] >= rewardInfo[tokenIds[i]].endTime);
             rewardInfo[tokenIds[i]] = Info(amount, uint64(startTime), uint64(endTime));
         }
         emit SetReward(tokenIds, amount, startTime, endTime);
