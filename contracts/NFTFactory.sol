@@ -17,10 +17,14 @@ contract NFT is ERC721Enumerable {
 
     string public eventID;
     address public owner;
+    address public pendingOwner;
     uint256 public nextTokenId;
     mapping(address => bool) public whitelist;
 
     event Whitelist(address[] indexed accounts);
+    event RevokeWhitelist(address[] indexed accounts);
+    event TransferOwner(address to);
+    event AcceptOwner(address owner);
 
     function claim() external returns (uint256 tokenId) {
         require(whitelist[msg.sender]);
@@ -34,6 +38,9 @@ contract NFT is ERC721Enumerable {
     function setWhitelist(address[] calldata accounts) external {
         require(owner == msg.sender);
         for (uint256 i = 0; i < accounts.length; i++) {
+            if (balanceOf(accounts[i]) > 0) {
+                continue;
+            }
             whitelist[accounts[i]] = true;
         }
         emit Whitelist(accounts);
@@ -44,11 +51,20 @@ contract NFT is ERC721Enumerable {
         for (uint256 i = 0; i < accounts.length; i++) {
             whitelist[accounts[i]] == false;
         }
+        emit RevokeWhitelist(accounts);
     }
 
     function transferOwner(address to) external {
         require(owner == msg.sender);
-        owner = to;
+        pendingOwner = to;
+        emit TransferOwner(pendingOwner);
+    }
+
+    function acceptOwner() external {
+        require(msg.sender == pendingOwner);
+        owner = pendingOwner;
+        pendingOwner = address(0);
+        emit AcceptOwner(owner);
     }
 
     function tokenURI(uint256 tokenId)
@@ -106,6 +122,10 @@ contract NFTFactory {
     mapping(string => address) public nftAddress;
 
     event CreateNFT(address nft);
+    event TransferOwner(address to);
+    event AcceptOwner(address owner);
+    event SetCreator(address creator);
+    event RevokeCreator(address creator);
 
     constructor() {
         owner = msg.sender;
@@ -119,18 +139,26 @@ contract NFTFactory {
 
     function transferOwner(address newOwner) external onlyOwner {
         pendingOwner = newOwner;
+        emit TransferOwner(newOwner);
     }
 
     function acceptOwner() external {
         require(msg.sender == pendingOwner);
         owner = pendingOwner;
         pendingOwner = address(0);
+        emit AcceptOwner(owner);
     }
 
     mapping(address => bool) public isCreator;
 
     function setCreator(address creator) external onlyOwner {
         isCreator[creator] = true;
+        emit SetCreator(creator);
+    }
+
+    function revokeCreator(address creator) external onlyOwner {
+        isCreator[creator] = false;
+        emit RevokeCreator(creator);
     }
 
     function createNFT(

@@ -26,6 +26,9 @@ contract RewardHandler_SlowRelease is Administrable, IRewardHandler {
     mapping(uint256 => Info) public rewardInfo;
     mapping(uint256 => uint256) public lastClaimTime;
 
+    event SetReward(uint256[] tokenIds, uint256 amount, uint256 startTime, uint256 endTime);
+    event ClaimReward(uint256 tokenId, uint256 amount);
+
     constructor (address nft_, address rewardToken_, address admin) {
         rewardToken = rewardToken_;
         nft = nft_;
@@ -36,6 +39,7 @@ contract RewardHandler_SlowRelease is Administrable, IRewardHandler {
         for (uint i = 0; i < tokenIds.length; i++) {
             rewardInfo[tokenIds[i]] = Info(amount, uint64(startTime), uint64(endTime));
         }
+        emit SetReward(tokenIds, amount, startTime, endTime);
     }
 
     function withdrawReward(uint256 amount) onlyAdmin external {
@@ -61,6 +65,7 @@ contract RewardHandler_SlowRelease is Administrable, IRewardHandler {
         uint256 amount = claimable(tokenId);
         lastClaimTime[tokenId] = block.timestamp;
         IERC20(rewardToken).transfer(IERC721(nft).ownerOf(tokenId), amount);
+        emit ClaimReward(tokenId, amount);
     }
 }
 

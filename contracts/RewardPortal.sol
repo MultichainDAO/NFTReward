@@ -34,6 +34,9 @@ contract RewardPortal is Initializable,OwnableUpgradeable {
     address factory_slowRelease;
     address factory_veShare;
 
+    event SetFactory_SlowRelease(address factory);
+    event SetFactory_VE(address factory);
+
     function initialize() public initializer {
         __Context_init_unchained();
         __Ownable_init_unchained();
@@ -41,10 +44,12 @@ contract RewardPortal is Initializable,OwnableUpgradeable {
 
     function setFactory_SlowRelease(address factory_) public onlyOwner {
         factory_slowRelease = factory_;
+        emit SetFactory_SlowRelease(factory_slowRelease);
     }
 
     function setFactory_VE(address factory_) public onlyOwner {
         factory_veShare = factory_;
+        emit SetFactory_VE(factory_veShare);
     }
 
     function deployRewardHandler_SlowRelease(address nft, address rewardToken, uint256 salt)
