@@ -36,16 +36,20 @@ contract RewardHandler_SlowRelease is Administrable, IRewardHandler {
     }
 
     function setReward(uint256[] calldata tokenIds, uint256 amount, uint256 startTime, uint256 endTime) onlyAdmin external {
+        require(startTime < endTime);
         for (uint i = 0; i < tokenIds.length; i++) {
+            require(rewardInfo[tokenIds[i]].startTime > block.timestamp || rewardInfo[tokenIds[i]].endTime > block.timestamp);
+            require(lastClaimTime[tokenIds[i]] >= rewardInfo[tokenIds[i]].endTime);
             rewardInfo[tokenIds[i]] = Info(amount, uint64(startTime), uint64(endTime));
         }
         emit SetReward(tokenIds, amount, startTime, endTime);
     }
 
-    function withdrawReward(uint256 amount) onlyAdmin external {
+    /// @dev Remove this function to make the contract looks safer.
+    /*function withdrawReward(uint256 amount) onlyAdmin external {
         IERC20(rewardToken).transfer(msg.sender, amount);
         emit LogWithdrawReward(amount);
-    }
+    }*/
 
     function claimable(uint256 tokenId) override public view returns(uint256) {
         Info memory info = rewardInfo[tokenId];
